@@ -25,11 +25,16 @@ def check_password():
 
 if check_password():
     # 2. CONEXÃO COM GOOGLE SHEETS
-    def conectar():
-        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gcp_service_account"], scope)
-        client = gspread.authorize(creds)
-        return client.open("NOME_DA_SUA_PLANILHA").sheet1
+    import json
+from google.oauth2 import service_account
+import streamlit as st
+
+service_account_info = json.loads(st.secrets["gcp_service_account"])
+
+creds = service_account.Credentials.from_service_account_info(
+    service_account_info,
+    scopes=["https://www.googleapis.com/auth/spreadsheets"]
+)
 
     # 3. INTERFACE
     st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/4/43/99_logo.svg", width=100)
