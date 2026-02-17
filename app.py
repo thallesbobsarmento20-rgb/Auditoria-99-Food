@@ -1,84 +1,188 @@
 import streamlit as st
-import pandas as pd
+import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+import pandas as pd
 import plotly.express as px
 from fpdf import FPDF
-import json
 
-# 1. CONFIGURAÇÃO DE SEGURANÇA (LOGIN)
-def check_password():
-    def password_entered():
-        if st.session_state["username"] in st.secrets["passwords"] and \
-           st.session_state["password"] == st.secrets["passwords"][st.session_state["username"]]:
-            st.session_state["password_correct"] = True
-            del st.session_state["password"]
-        else:
-            st.session_state["password_correct"] = False
+# -------------------------
+# LOGIN
+# -------------------------
 
-    if "password_correct" not in st.session_state:
-        st.title("🔐 QA 99 Food - Login")
-        st.text_input("Usuário", on_change=password_entered, key="username")
-        st.text_input("Senha", type="password", on_change=password_entered, key="password")
-        return False
-    return st.session_state["password_correct"]
+def check_login():
+    if "logged" not in st.session_state:
+        st.session_state.logged = False
 
-if check_password():
-    # 2. CONEXÃO COM GOOGLE SHEETS
-    import json
-from google.oauth2 import service_account
-import streamlit as st
+    if not st.session_state.logged:
+        st.title("🔐 QA 99 Food - Sistema Profissional")
 
-service_account_info = json.loads(st.secrets["gcp_service_account"])
+        user = st.text_input("Usuário")
+        password = st.text_input("Senha", type="password")
 
-creds = service_account.Credentials.from_service_account_info(
-    service_account_info,
-    scopes=["https://www.googleapis.com/auth/spreadsheets"]
+        if st.button("Entrar"):
+            if user in st.secrets["passwords"] and password == st.secrets["passwords"][user]:
+                st.session_state.logged = True
+                st.success("Login realizado!")
+                st.rerun()
+            else:
+                st.error("Credenciais inválidas")
+
+        st.stop()
+
+
+check_login()
+
+# -------------------------
+# GOOGLE SHEETS
+# -------------------------
+
+@st.cache_resource
+def conectar_planilha():
+    service_account_info = json.loads(st.secrets["gcp_service_account"])
+
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/drive",
+    ]
+
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(
+        service_account_info, scope
+    )
+
+    client = gspread.authorize(creds)
+
+    sheet = client.open("Auditoria_99Food").sheet1
+    return sheet
+
+
+sheet = conectar_planilha()
+
+# -------------------------
+# MENU
+# -------------------------
+
+menu = st.sidebar.selectbox(
+    "Menu",
+    ["Nova Auditoria", "Dashboard", "Ranking", "Exportar PDF"]
 )
 
-    # 3. INTERFACE
+# -------------------------
+# FUNÇÃO SCORE
+# -------------------------
 
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/4/43/99_logo.svg", width=100)
+def calcular_score(c1, c2, c3, c4):
+    return (25 if c1 else 0) + (25 if c2 else 0) + (25 if c3 else 0) + (25 if c4 else 0)
 
-aba1, aba2 = st.tabs(["📝 Auditoria", "📈 Dashboard"])
+# -------------------------
+# NOVA AUDITORIA
+# -------------------------
 
-with aba1:
-    st.header("Nova Auditoria de Menu")
-with st.form("form_qa"):
-    loja = st.text_input("Nome/ID da Loja")
-    analista = st.selectbox("Analista Responsável", ["Ana", "Bruno", "Carlos"])
-            
-    st.write("---")
-    c1 = st.checkbox("Preços estão corretos? (Peso 40%)")
-    c2 = st.checkbox("Regras de Complementos OK? (Peso 30%)")
-    c3 = st.checkbox("Fotos seguem o padrão? (Peso 15%)")
-    c4 = st.checkbox("Categorização correta? (Peso 10%)")
-    c5 = st.checkbox("Texto sem erros ortográficos? (Peso 5%)")
-    obs = st.text_area("Observações Adicionais")
-            
-submit = st.form_submit_button("Registrar e Gerar Feedback")
+if menu == "Nova Auditoria":
 
-if submit:
-            # Cálculo do Score
-            score = (40 if c1 else 0) + (30 if c2 else 0) + (15 if c3 else 0) + (10 if c4 else 0) + (5 if c5 else 0)
-            data_hoje = datetime.now().strftime("%d/%m/%Y %H:%M")
-            
-            # Salvar no Sheets
-            sheet = conectar()
-            sheet.append_row([data_hoje, loja, analista, int(c1), int(c2), int(c3), int(c4), int(c5), score, obs])
-            
-            st.success(f"Nota Final: {score}%")
-            
-            # Gerador de Texto para Copiar
-            erros = [e for e, v in zip(["Preço", "Regras", "Fotos", "Cat", "Texto"], [c1,c2,c3,c4,c5]) if not v]
-            st.code(f"Olá {analista}, menu da loja {loja} auditado.\nScore: {score}%\nCorreções: {', '.join(erros) if erros else 'Nenhuma'}")
+    st.title("📋 Nova Auditoria")
 
-with aba2:
-        st.header("Performance do Time")
-        sheet = conectar()
-        df = pd.DataFrame(sheet.get_all_records())
-if not df.empty:
-            fig = px.line(df, x="Data", y="Score", color="Analista", title="Evolução da Qualidade")
-            st.plotly_chart(fig, use_container_width=True)
-            st.dataframe(df.tail(10))
+    loja = st.text_input("Nome da Loja")
+    analista = st.selectbox("Analista", ["Ana", "Bruno", "Carlos"])
+
+    c1 = st.checkbox("Preços corretos")
+    c2 = st.checkbox("Complementos OK")
+    c3 = st.checkbox("Fotos OK")
+    c4 = st.checkbox("Cardápio organizado")
+
+    obs = st.text_area("Observações")
+
+    foto = st.file_uploader("📸 Upload de Foto", type=["png", "jpg", "jpeg"])
+
+    if st.button("Registrar Auditoria"):
+
+        score = calcular_score(c1, c2, c3, c4)
+
+        data = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+        sheet.append_row([
+            data,
+            loja,
+            analista,
+            c1,
+            c2,
+            c3,
+            c4,
+            score,
+            obs
+        ])
+
+        st.success("✅ Auditoria registrada!")
+
+# -------------------------
+# DASHBOARD
+# -------------------------
+
+elif menu == "Dashboard":
+
+    st.title("📊 Dashboard")
+
+    data = sheet.get_all_records()
+    df = pd.DataFrame(data)
+
+    if len(df) == 0:
+        st.warning("Sem dados ainda")
+    else:
+
+        fig = px.bar(
+            df,
+            x="Nome da Loja",
+            y="Score",
+            color="Analista",
+            title="Score por Loja"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+# -------------------------
+# RANKING
+# -------------------------
+
+elif menu == "Ranking":
+
+    st.title("🏆 Ranking de Lojas")
+
+    data = sheet.get_all_records()
+    df = pd.DataFrame(data)
+
+    if len(df) > 0:
+        ranking = df.groupby("Nome da Loja")["Score"].mean().sort_values(ascending=False)
+
+        st.dataframe(ranking)
+
+# -------------------------
+# EXPORTAR PDF
+# -------------------------
+
+elif menu == "Exportar PDF":
+
+    st.title("📄 Exportar Relatório")
+
+    if st.button("Gerar PDF"):
+
+        data = sheet.get_all_records()
+        df = pd.DataFrame(data)
+
+        pdf = FPDF()
+        pdf.add_page()
+
+        pdf.set_font("Arial", size=10)
+
+        for i, row in df.iterrows():
+            linha = f"{row['Nome da Loja']} - Score: {row['Score']}"
+            pdf.cell(200, 8, txt=linha, ln=True)
+
+        pdf.output("relatorio.pdf")
+
+        with open("relatorio.pdf", "rb") as f:
+            st.download_button(
+                "⬇️ Baixar PDF",
+                f,
+                file_name="relatorio.pdf"
+            )
