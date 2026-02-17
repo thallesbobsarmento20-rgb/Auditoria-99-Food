@@ -45,7 +45,6 @@ def conectar_planilha():
 
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
-    import json
     import streamlit as st
 
     scope = [
@@ -53,7 +52,7 @@ def conectar_planilha():
         "https://www.googleapis.com/auth/drive",
     ]
 
-    service_account_info = json.loads(st.secrets["gcp_service_account"])
+    service_account_info = st.secrets["gcp_service_account"]
 
     creds = ServiceAccountCredentials.from_json_keyfile_dict(
         service_account_info, scope
@@ -61,10 +60,7 @@ def conectar_planilha():
 
     client = gspread.authorize(creds)
 
-    # 🔥 ABRE PLANILHA
     planilha = client.open("Auditoria 99Food")
-
-    # 🔥 PEGA PRIMEIRA ABA AUTOMÁTICO (NUNCA ERRA)
     sheet = planilha.sheet1
 
     return sheet
