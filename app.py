@@ -73,11 +73,11 @@ if submit:
             erros = [e for e, v in zip(["Preço", "Regras", "Fotos", "Cat", "Texto"], [c1,c2,c3,c4,c5]) if not v]
             st.code(f"Olá {analista}, menu da loja {loja} auditado.\nScore: {score}%\nCorreções: {', '.join(erros) if erros else 'Nenhuma'}")
 
-    with aba2:
+with aba2:
         st.header("Performance do Time")
         sheet = conectar()
         df = pd.DataFrame(sheet.get_all_records())
-        if not df.empty:
+if not df.empty:
             fig = px.line(df, x="Data", y="Score", color="Analista", title="Evolução da Qualidade")
             st.plotly_chart(fig, use_container_width=True)
             st.dataframe(df.tail(10))
