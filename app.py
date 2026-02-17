@@ -5,6 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import plotly.express as px
 from fpdf import FPDF
+import json
 
 # 1. CONFIGURAÇÃO DE SEGURANÇA (LOGIN)
 def check_password():
