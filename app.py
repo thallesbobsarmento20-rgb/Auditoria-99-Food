@@ -126,7 +126,7 @@ elif menu == "Dashboard":
     st.title("📊 Dashboard")
 
     data = sheet.get_all_values()
-    df = pd.DataFrame(data)
+    df.columns = df.columns.str.strip()
 
     if len(df) == 0:
         st.warning("Sem dados ainda")
