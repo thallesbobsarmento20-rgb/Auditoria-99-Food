@@ -40,13 +40,20 @@ check_login()
 
 @st.cache_resource
 def conectar_planilha():
-    service_account_info = st.secrets["gcp"]
-    
-creds = ServiceAccountCredentials.from_json_keyfile_dict(
-        service_account_info, ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-    )
 
-    client = gspread.authorize(creds)
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+
+service_account_info = st.secrets["gcp"]
+
+creds = ServiceAccountCredentials.from_json_keyfile_dict(
+    service_account_info,
+    scope
+)
+
+client = gspread.authorize(creds)
 
     sheet = client.open("Auditoria_99Food").sheet1
     return sheet
