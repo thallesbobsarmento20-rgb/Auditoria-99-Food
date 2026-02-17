@@ -40,7 +40,7 @@ check_login()
 
 @st.cache_resource
 def conectar_planilha():
-    service_account_info = json.loads(st.secrets["gcp"]["gcp_service_account"])
+    service_account_info = st.secrets["gcp"]["gcp_service_account"]
 
     scope = [
         "https://spreadsheets.google.com/feeds",
@@ -48,7 +48,7 @@ def conectar_planilha():
     ]
 
     creds = ServiceAccountCredentials.from_json_keyfile_dict(
-        service_account_info, scope
+        service_account_info, ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     )
 
     client = gspread.authorize(creds)
