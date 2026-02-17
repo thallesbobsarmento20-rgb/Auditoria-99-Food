@@ -40,7 +40,7 @@ check_login()
 
 @st.cache_resource
 def conectar_planilha():
-    service_account_info = json.loads(st.secrets["gcp_service_account"])
+    service_account_info = json.loads(st.secrets["gcp"]["gcp_service_account"])
 
     scope = [
         "https://spreadsheets.google.com/feeds",
