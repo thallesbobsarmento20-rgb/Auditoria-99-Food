@@ -44,7 +44,7 @@ aba1, aba2 = st.tabs(["📝 Auditoria", "📈 Dashboard"])
 
 with aba1:
     st.header("Nova Auditoria de Menu")
-    with st.form("form_qa"):
+with st.form("form_qa"):
     loja = st.text_input("Nome/ID da Loja")
     analista = st.selectbox("Analista Responsável", ["Ana", "Bruno", "Carlos"])
             
