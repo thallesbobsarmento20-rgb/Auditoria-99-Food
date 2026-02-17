@@ -41,13 +41,8 @@ check_login()
 @st.cache_resource
 def conectar_planilha():
     service_account_info = st.secrets["gcp"]
-
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive",
-    ]
-
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(
+    
+creds = ServiceAccountCredentials.from_json_keyfile_dict(
         service_account_info, ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     )
 
