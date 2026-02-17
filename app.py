@@ -121,27 +121,37 @@ if menu == "Nova Auditoria":
 # DASHBOARD
 # -------------------------
 
-elif menu == "Dashboard":
+menu = st.sidebar.selectbox(
+    "Menu",
+    ["Dashboard", "Ranking"]
+)
+
+if menu == "Dashboard":
 
     st.title("📊 Dashboard")
 
     data = sheet.get_all_records()
 
-if len(data) == 0:
-    st.warning("Sem dados na planilha ainda.")
-else:
-    df = pd.DataFrame(data)
-
-    df.columns = df.columns.str.strip()
-
-    st.subheader("Dados")
-    st.dataframe(df)
-
-    if "Loja" in df.columns and "Score" in df.columns:
-        fig = px.bar(df, x="Loja", y="Score", title="Score por Loja")
-        st.plotly_chart(fig)
+    if len(data) == 0:
+        st.warning("Sem dados na planilha ainda.")
     else:
-        st.info("Colunas Loja e Score não encontradas.")
+        df = pd.DataFrame(data)
+        df.columns = df.columns.str.strip()
+
+        st.subheader("Dados")
+        st.dataframe(df)
+
+        if "Loja" in df.columns and "Score" in df.columns:
+            fig = px.bar(df, x="Loja", y="Score", title="Score por Loja")
+            st.plotly_chart(fig)
+        else:
+            st.info("Colunas Loja e Score não encontradas.")
+
+
+elif menu == "Ranking":
+
+    st.title("🏆 Ranking")
+    st.write("Conteúdo do ranking aqui")
 
 # -------------------------
 # RANKING
