@@ -56,7 +56,7 @@ with st.form("form_qa"):
     c5 = st.checkbox("Texto sem erros ortográficos? (Peso 5%)")
     obs = st.text_area("Observações Adicionais")
             
-            submit = st.form_submit_button("Registrar e Gerar Feedback")
+submit = st.form_submit_button("Registrar e Gerar Feedback")
 
 if submit:
             # Cálculo do Score
