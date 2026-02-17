@@ -46,7 +46,7 @@ def conectar_planilha():
     "https://www.googleapis.com/auth/drive"
     ]
 
-    service_account_info = st.secrets["gcp"]
+    service_account_info = st.secrets["gcp_service_account"]
 
     creds = ServiceAccountCredentials.from_json_keyfile_dict(
         service_account_info,
