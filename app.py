@@ -43,22 +43,22 @@ st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/4/43/99_logo.sv
 aba1, aba2 = st.tabs(["📝 Auditoria", "📈 Dashboard"])
 
 with aba1:
-st.header("Nova Auditoria de Menu")
-with st.form("form_qa"):
-loja = st.text_input("Nome/ID da Loja")
-analista = st.selectbox("Analista Responsável", ["Ana", "Bruno", "Carlos"])
+    st.header("Nova Auditoria de Menu")
+    with st.form("form_qa"):
+    loja = st.text_input("Nome/ID da Loja")
+    analista = st.selectbox("Analista Responsável", ["Ana", "Bruno", "Carlos"])
             
-st.write("---")
-c1 = st.checkbox("Preços estão corretos? (Peso 40%)")
-c2 = st.checkbox("Regras de Complementos OK? (Peso 30%)")
-c3 = st.checkbox("Fotos seguem o padrão? (Peso 15%)")
-c4 = st.checkbox("Categorização correta? (Peso 10%)")
-c5 = st.checkbox("Texto sem erros ortográficos? (Peso 5%)")
-obs = st.text_area("Observações Adicionais")
+    st.write("---")
+    c1 = st.checkbox("Preços estão corretos? (Peso 40%)")
+    c2 = st.checkbox("Regras de Complementos OK? (Peso 30%)")
+    c3 = st.checkbox("Fotos seguem o padrão? (Peso 15%)")
+    c4 = st.checkbox("Categorização correta? (Peso 10%)")
+    c5 = st.checkbox("Texto sem erros ortográficos? (Peso 5%)")
+    obs = st.text_area("Observações Adicionais")
             
             submit = st.form_submit_button("Registrar e Gerar Feedback")
 
-        if submit:
+if submit:
             # Cálculo do Score
             score = (40 if c1 else 0) + (30 if c2 else 0) + (15 if c3 else 0) + (10 if c4 else 0) + (5 if c5 else 0)
             data_hoje = datetime.now().strftime("%d/%m/%Y %H:%M")
