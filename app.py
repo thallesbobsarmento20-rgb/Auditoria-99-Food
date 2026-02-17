@@ -125,22 +125,23 @@ elif menu == "Dashboard":
 
     st.title("📊 Dashboard")
 
-    data = sheet.get_all_values()
+    data = sheet.get_all_records()
+
+if len(data) == 0:
+    st.warning("Sem dados na planilha ainda.")
+else:
+    df = pd.DataFrame(data)
+
     df.columns = df.columns.str.strip()
 
-    if len(df) == 0:
-        st.warning("Sem dados ainda")
+    st.subheader("Dados")
+    st.dataframe(df)
+
+    if "Loja" in df.columns and "Score" in df.columns:
+        fig = px.bar(df, x="Loja", y="Score", title="Score por Loja")
+        st.plotly_chart(fig)
     else:
-
-        fig = px.bar(
-            df,
-            x="Nome da Loja",
-            y="Score",
-            color="Analista",
-            title="Score por Loja"
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
+        st.info("Colunas Loja e Score não encontradas.")
 
 # -------------------------
 # RANKING
