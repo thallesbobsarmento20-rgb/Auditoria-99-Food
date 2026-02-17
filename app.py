@@ -123,9 +123,9 @@ if menu == "Nova Auditoria":
 
 elif menu == "Dashboard":
     
-menu = st.sidebar.selectbox(
+    menu = st.sidebar.selectbox(
     "Menu",
-    ["Dashboard", "Ranking"]
+    ["Dashboard", "Registrar"]
 )
 
 if menu == "Dashboard":
