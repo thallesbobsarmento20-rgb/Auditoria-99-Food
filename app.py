@@ -121,6 +121,8 @@ if menu == "Nova Auditoria":
 # DASHBOARD
 # -------------------------
 
+elif menu == "Dashboard":
+    
 menu = st.sidebar.selectbox(
     "Menu",
     ["Dashboard", "Ranking"]
