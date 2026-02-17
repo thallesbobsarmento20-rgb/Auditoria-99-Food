@@ -37,8 +37,10 @@ creds = service_account.Credentials.from_service_account_info(
 )
 
     # 3. INTERFACE
-    st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/4/43/99_logo.svg", width=100)
-    aba1, aba2 = st.tabs(["📝 Auditoria", "📈 Dashboard"])
+
+st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/4/43/99_logo.svg", width=100)
+
+aba1, aba2 = st.tabs(["📝 Auditoria", "📈 Dashboard"])
 
     with aba1:
         st.header("Nova Auditoria de Menu")
