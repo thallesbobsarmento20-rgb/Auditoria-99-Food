@@ -55,7 +55,7 @@ def conectar_planilha():
 
     client = gspread.authorize(creds)
 
-    sheet = client.open("Auditoria_99Food").sheet1
+    sheet = client.open("Auditorias_99Food").sheet1
     return sheet
 
 
