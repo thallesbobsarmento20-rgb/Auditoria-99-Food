@@ -125,7 +125,7 @@ elif menu == "Dashboard":
 
     st.title("📊 Dashboard")
 
-    data = sheet.get_all_records()
+    data = sheet.get_all_values()
     df = pd.DataFrame(data)
 
     if len(df) == 0:
