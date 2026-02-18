@@ -131,7 +131,7 @@ elif menu == "Dashboard":
     
     menu = st.sidebar.selectbox(
     "Menu",
-    ["Dashboard", "Registrar"]
+    ["Dashboard"]
 )
 
 if menu == "Dashboard":
